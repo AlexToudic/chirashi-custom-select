@@ -103,7 +103,8 @@ export default class CustomSelect {
         let label = createElement('div')
         addClass(label, 'cs-label')
         let labelTxt = createElement('span')
-        labelTxt.textContent = scopeSettings.placeholder
+        let selected = findOne(list, '.selected')
+        labelTxt.textContent = selected ? selected.textContent : scopeSettings.placeholder
         append(label, labelTxt)
         append(select, label)
 
@@ -138,10 +139,10 @@ export default class CustomSelect {
                 option.textContent = item.textContent
 
                 if (item.disabled)
-                addClass(option, 'disabled')
+                    addClass(option, 'disabled')
 
                 if (item.selected)
-                addClass(option, 'selected')
+                    addClass(option, 'selected')
 
                 append(list, option)
             }
