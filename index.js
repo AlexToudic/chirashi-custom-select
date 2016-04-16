@@ -111,6 +111,8 @@ export default class CustomSelect {
         append(select, element)
 
         on(select, 'click', this.getFocus)
+
+        this.checkViewport(select)
     }
 
     getFocus(event) {

@@ -1,6 +1,6 @@
 {
   "name": "chirashi-custom-select",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Custom select plugin on Chirashi",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/AlexToudic/chirashi-custom-select#readme",
   "dependencies": {
-    "chirashi": "^3.0.4"
+    "chirashi": "^3.1.0"
   }
 }
