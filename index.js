@@ -49,11 +49,11 @@ export default class CustomSelect {
         this.optionClick = this.optionClick.bind(this)
         this.optionHover = this.optionHover.bind(this)
         this.getFocus    = this.getFocus.bind(this)
-        this.blurFocus = this.blurFocus.bind(this)
+        this.blurFocus   = this.blurFocus.bind(this)
+        this.toggleFocus = this.toggleFocus.bind(this)
+        this.tryToBlur   = this.tryToBlur.bind(this)
 
         forEach(this.elements, this.replaceDOMelement.bind(this))
-
-        on(document.documentElement, 'click', this.blurFocus)
     }
 
     replaceDOMelement (element) {
@@ -110,13 +110,20 @@ export default class CustomSelect {
 
         append(select, element)
 
-        on(select, 'click', this.getFocus)
+        on(select, 'click', this.toggleFocus)
 
         this.checkViewport(select)
     }
 
     getFocus(event) {
         this.triggerSelect(event, event.currentTarget)
+    }
+
+    toggleFocus(event) {
+        if (!hasClass(event.currentTarget, 'open'))
+            this.getFocus(event)
+        else
+            this.blurFocus(event)
     }
 
     update() {
@@ -187,15 +194,17 @@ export default class CustomSelect {
     }
 
     blurFocus(event) {
-        forEach(this.elements, this.blurSelect.bind(this))
+        this.blurSelect(event, event.currentTarget)
     }
 
-    blurSelect(select) {
-        let selectParent = parent(select)
-        let bounding = screenPosition(selectParent)
+    blurSelect(event, select) {
+        event.preventDefault()
 
-        if(hasClass(selectParent, 'open') && (event.clientX < bounding.left || event.clientX > bounding.right || event.clientY < bounding.top || event.clientY > bounding.bottom))
-            removeClass(selectParent, 'open')
+        if(hasClass(select, 'open')) {
+            removeClass(select, 'open')
+
+            off(document.body, 'click', this.tryToBlur)
+        }
     }
 
     triggerSelect(event, select){
@@ -204,7 +213,24 @@ export default class CustomSelect {
         if(!hasClass(select, 'disabled')) {
             this.checkViewport(select)
             addClass(select, 'open')
+
+            setTimeout(() => {
+                on(document.body, 'click', this.tryToBlur)
+            })
         }
+    }
+
+    tryToBlur(event) {
+        forEach(this.elements, (realSelect) => {
+            let select = parent(realSelect)
+            let bounds = screenPosition(select)
+
+            if (event.clientX < bounds.left
+                || event.clientX > bounds.right
+                || event.clientY < bounds.bottom
+                || event.clientY > bounds.top)
+                this.blurSelect(event, select)
+        })
     }
 
     optionHover(event){
