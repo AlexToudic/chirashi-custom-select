@@ -116,7 +116,9 @@ export default class CustomSelect {
     }
 
     getFocus(event) {
-        this.triggerSelect(event, event.currentTarget)
+        event.preventDefault()
+
+        this.triggerSelect(event.currentTarget)
     }
 
     toggleFocus(event) {
@@ -194,12 +196,12 @@ export default class CustomSelect {
     }
 
     blurFocus(event) {
-        this.blurSelect(event, event.currentTarget)
-    }
-
-    blurSelect(event, select) {
         event.preventDefault()
 
+        this.blurSelect(event.currentTarget)
+    }
+
+    blurSelect(select) {
         if(hasClass(select, 'open')) {
             removeClass(select, 'open')
 
@@ -207,9 +209,7 @@ export default class CustomSelect {
         }
     }
 
-    triggerSelect(event, select){
-        event.preventDefault()
-
+    triggerSelect(select){
         if(!hasClass(select, 'disabled')) {
             this.checkViewport(select)
             addClass(select, 'open')
@@ -228,8 +228,10 @@ export default class CustomSelect {
             if (event.clientX < bounds.left
                 || event.clientX > bounds.right
                 || event.clientY < bounds.bottom
-                || event.clientY > bounds.top)
-                this.blurSelect(event, select)
+                || event.clientY > bounds.top) {
+                event.preventDefault()
+                this.blurSelect(select)
+            }
         })
     }
 
@@ -270,7 +272,7 @@ export default class CustomSelect {
             realSelect.dispatchEvent(event)
         }
 
-        removeClass(select, 'open')
+        this.blurSelect(select)
     }
 
     checkViewport(select){
