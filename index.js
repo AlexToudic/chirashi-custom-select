@@ -83,10 +83,10 @@ export default class CustomSelect {
         addClass(select, 'cs-select')
 
         if(scopeSettings.customClass)
-        addClass(select, scopeSettings.customClass)
+            addClass(select, scopeSettings.customClass)
 
         if (element.disabled)
-        addClass(select, 'disabled')
+            addClass(select, 'disabled')
 
         insertBefore(element, select)
 
@@ -112,7 +112,10 @@ export default class CustomSelect {
 
         on(select, 'click', this.toggleFocus)
 
-        this.checkViewport(select)
+        if (!this.options.forceAbove)
+            this.checkViewport(select)
+        else
+            addClass(select, 'above')
     }
 
     getFocus(event) {
@@ -211,7 +214,9 @@ export default class CustomSelect {
 
     triggerSelect(select){
         if(!hasClass(select, 'disabled')) {
-            this.checkViewport(select)
+            if (!this.options.forceAbove)
+                this.checkViewport(select)
+
             addClass(select, 'open')
 
             setTimeout(() => {
@@ -280,8 +285,8 @@ export default class CustomSelect {
         listHeight = height(findOne(select, '.cs-list'))
 
         if ((screenPos.bottom + listHeight + 10) > window.innerHeight && (screenPos.top - listHeight) > 10)
-        addClass(select, 'above')
+            addClass(select, 'above')
         else
-        removeClass(select, 'above')
+            removeClass(select, 'above')
     }
 }
