@@ -111,11 +111,14 @@ export default class CustomSelect {
         append(select, element)
 
         on(select, 'click', this.toggleFocus)
+        on(select, 'change', event => {
+            removeClass(find(select, 'li.cs-option'), 'selected')
+            let option = findOne(select, `[data-value="${findOne(select, 'select').value}"]`)
+            addClass(option, 'selected')
+            findOne(select, '.cs-label').textContent = option.textContent
+        })
 
-        if (!this.options.forceAbove)
-            this.checkViewport(select)
-        else
-            addClass(select, 'above')
+        this.checkViewport(select)
     }
 
     getFocus(event) {
@@ -214,9 +217,7 @@ export default class CustomSelect {
 
     triggerSelect(select){
         if(!hasClass(select, 'disabled')) {
-            if (!this.options.forceAbove)
-                this.checkViewport(select)
-
+            this.checkViewport(select)
             addClass(select, 'open')
 
             setTimeout(() => {
