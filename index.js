@@ -63,8 +63,8 @@ export default class CustomSelect {
             let dataOption = data(element, kebabCase(key))
 
             if (dataOption != null)
-            scopeSettings[key] = dataOption
-        })
+        scopeSettings[key] = dataOption
+    })
 
         let options = element.children
 
@@ -72,13 +72,17 @@ export default class CustomSelect {
             let first = options[0]
 
             if (first.tagName === 'OPTGROUP')
-            first = first.children[0]
+                first = first.children[0]
 
             scopeSettings.placeholder = first.textContent
         }
 
         let select = createElement('div')
         if(scopeSettings.customID) prop(select, { id: scopeSettings.customID })
+        if(scopeSettings.forceAbove) {
+            data(select, { 'above-forced': true })
+            addClass(select, 'above')
+        }
 
         addClass(select, 'cs-select')
 
@@ -113,10 +117,10 @@ export default class CustomSelect {
         on(select, 'click', this.toggleFocus)
         on(select, 'change', event => {
             removeClass(find(select, 'li.cs-option'), 'selected')
-            let option = findOne(select, `[data-value="${findOne(select, 'select').value}"]`)
-            addClass(option, 'selected')
-            findOne(select, '.cs-label').textContent = option.textContent
-        })
+        let option = findOne(select, `[data-value="${findOne(select, 'select').value}"]`)
+        addClass(option, 'selected')
+        findOne(select, '.cs-label').textContent = option.textContent
+    })
 
         this.checkViewport(select)
     }
@@ -138,12 +142,12 @@ export default class CustomSelect {
         forEach(this.elements, (elem) => {
             this.destroy(elem)
 
-            let wrapper = parent(elem)
-            insertBefore(wrapper, elem)
-            remove(wrapper)
+        let wrapper = parent(elem)
+        insertBefore(wrapper, elem)
+        remove(wrapper)
 
-            this.replaceDOMelement(elem)
-        })
+        this.replaceDOMelement(elem)
+    })
     }
 
     populateList (list, options) {
@@ -151,35 +155,35 @@ export default class CustomSelect {
             let option = createElement('li')
             addClass(option, 'cs-option')
 
-            if (item.tagName === 'OPTION') {
-                data(option, { value: item.value })
-                option.textContent = item.textContent
+        if (item.tagName === 'OPTION') {
+            data(option, { value: item.value })
+            option.textContent = item.textContent
 
-                if (item.disabled)
-                    addClass(option, 'disabled')
+            if (item.disabled)
+                addClass(option, 'disabled')
 
-                if (item.selected)
-                    addClass(option, 'selected')
+            if (item.selected)
+                addClass(option, 'selected')
 
-                append(list, option)
-            }
-            else {
-                addClass(option, 'cs-optgroup')
-                option.textContent = item.textContent
+            append(list, option)
+        }
+        else {
+            addClass(option, 'cs-optgroup')
+            option.textContent = item.textContent
 
-                append(list, option)
+            append(list, option)
 
-                let optgroup = createElement('ul')
-                addClass(optgroup, 'cs-optgroup-list')
+            let optgroup = createElement('ul')
+            addClass(optgroup, 'cs-optgroup-list')
 
-                append(option, optgroup)
+            append(option, optgroup)
 
-                this.populateList(optgroup, item.children)
-            }
+            this.populateList(optgroup, item.children)
+        }
 
-            on(option, 'click', this.optionClick)
-            on(option, 'mousemove', this.optionHover)
-        }, true) // force order
+        on(option, 'click', this.optionClick)
+        on(option, 'mousemove', this.optionHover)
+    }, true) // force order
     }
 
     destroy(elem) {
@@ -194,11 +198,11 @@ export default class CustomSelect {
         forEach(elem, (select) => {
             off(select, 'click', this.getFocus)
 
-            forEach(find(select, 'li.cs-option'), (options) => {
-                off(option, 'click', this.optionClick)
-                off(option, 'mousemove', this.optionHover)
-            })
-        })
+        forEach(find(select, 'li.cs-option'), (options) => {
+            off(option, 'click', this.optionClick)
+        off(option, 'mousemove', this.optionHover)
+    })
+    })
     }
 
     blurFocus(event) {
@@ -222,7 +226,7 @@ export default class CustomSelect {
 
             setTimeout(() => {
                 on(document.body, 'click', this.tryToBlur)
-            })
+        })
         }
     }
 
@@ -232,13 +236,13 @@ export default class CustomSelect {
             let bounds = screenPosition(select)
 
             if (event.clientX < bounds.left
-                || event.clientX > bounds.right
-                || event.clientY < bounds.bottom
-                || event.clientY > bounds.top) {
-                event.preventDefault()
-                this.blurSelect(select)
-            }
-        })
+        || event.clientX > bounds.right
+        || event.clientY < bounds.bottom
+        || event.clientY > bounds.top) {
+            event.preventDefault()
+            this.blurSelect(select)
+        }
+    })
     }
 
     optionHover(event){
@@ -282,8 +286,10 @@ export default class CustomSelect {
     }
 
     checkViewport(select){
+        if (data(select, 'above-forced')) return
+
         let screenPos = screenPosition(select),
-        listHeight = height(findOne(select, '.cs-list'))
+            listHeight = height(findOne(select, '.cs-list'))
 
         if ((screenPos.bottom + listHeight + 10) > window.innerHeight && (screenPos.top - listHeight) > 10)
             addClass(select, 'above')
